@@ -1,0 +1,65 @@
+[
+  {
+    "id": 1,
+    "name": "Ankit Aginhotry",
+    "email": "ankit@company.com",
+    "role": "HR",
+    "department": "Human Resources",
+    "manager": null,
+    "status": "Active"
+  },
+  {
+    "id": 2,
+    "name": "Rohit Sharma",
+    "email": "rohit@company.com",
+    "role": "CTO",
+    "department": "Engineering",
+    "manager": null,
+    "status": "Active"
+  },
+  {
+    "id": 3,
+    "name": "Priya Verma",
+    "email": "priya@company.com",
+    "role": "Manager",
+    "department": "Engineering",
+    "manager": "Rohit Sharma",
+    "status": "Active"
+  },
+  {
+    "id": 4,
+    "name": "Aman Gupta",
+    "email": "aman@company.com",
+    "role": "Sr Developer",
+    "department": "Engineering",
+    "manager": "Priya Verma",
+    "status": "Active"
+  },
+  {
+    "id": 5,
+    "name": "Neha Singh",
+    "email": "neha@company.com",
+    "role": "Jr Developer",
+    "department": "Engineering",
+    "manager": "Priya Verma",
+    "status": "Pending Invite"
+  },
+  {
+    "id": 6,
+    "name": "Karan Mehta",
+    "email": "karan@company.com",
+    "role": "Finance Manager",
+    "department": "Finance",
+    "manager": null,
+    "status": "Active"
+  },
+  {
+    "id": 7,
+    "name": "Simran Kaur",
+    "email": "simran@company.com",
+    "role": "HR Executive",
+    "department": "Human Resources",
+    "manager": "Ankit Aginhotry",
+    "status": "Active"
+  }
+]

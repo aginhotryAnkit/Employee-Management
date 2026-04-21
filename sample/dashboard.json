@@ -1,0 +1,61 @@
+{
+  "summary": {
+    "totalEmployees": 25,
+    "activeEmployees": 22,
+    "pendingInvites": 3,
+    "departments": 4
+  },
+
+  "recentEmployees": [
+    {
+      "id": 5,
+      "name": "Neha Singh",
+      "role": "Jr Developer",
+      "status": "Pending Invite"
+    },
+    {
+      "id": 4,
+      "name": "Aman Gupta",
+      "role": "Sr Developer",
+      "status": "Active"
+    },
+    {
+      "id": 7,
+      "name": "Simran Kaur",
+      "role": "HR Executive",
+      "status": "Active"
+    }
+  ],
+
+  "pendingInvites": [
+    {
+      "email": "neha@company.com",
+      "role": "Jr Developer",
+      "expiresIn": "12 hours"
+    },
+    {
+      "email": "newhire@company.com",
+      "role": "Designer",
+      "expiresIn": "1 day"
+    }
+  ],
+
+  "departmentStats": [
+    {
+      "department": "Engineering",
+      "count": 12
+    },
+    {
+      "department": "Human Resources",
+      "count": 5
+    },
+    {
+      "department": "Finance",
+      "count": 4
+    },
+    {
+      "department": "Design",
+      "count": 4
+    }
+  ]
+}

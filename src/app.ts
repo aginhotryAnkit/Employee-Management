@@ -16,6 +16,16 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 app.use('/api', routes);
 
+// Health check
+app.get('/health', (_req: Request, res: Response) => {
+  res.status(200).json({
+    status: 'ok',
+    message: 'Server is up and running',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development',
+  });
+});
+
 // 404
 app.use((_req: Request, res: Response) => {
   res.status(404).json({ message: 'Route not found' });

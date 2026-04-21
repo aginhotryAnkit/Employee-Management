@@ -1,7 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
-import Employee from '../database/models/employee.model';
 export interface AuthRequest extends Request {
-    employee?: Employee;
+    user?: {
+        id: string;
+        name: string;
+        email: string;
+        role: string;
+    };
 }
 export declare const protect: (req: AuthRequest, res: Response, next: NextFunction) => Promise<void>;
+export declare const authorize: (...roles: string[]) => (req: AuthRequest, res: Response, next: NextFunction) => void;
 //# sourceMappingURL=authMiddleware.d.ts.map
