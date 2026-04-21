@@ -1,12 +1,13 @@
 import { Response } from 'express';
 import { AuthRequest } from '../../middlewares/authMiddleware';
 import { getDashboardService } from './dashboard.service';
+import { sendSuccess, sendError } from '../../utils/response';
 
 export const getDashboard = async (_req: AuthRequest, res: Response): Promise<void> => {
   try {
     const data = await getDashboardService();
-    res.status(200).json(data);
+    sendSuccess({ res, statusCode: 200, message: 'Dashboard fetched successfully', data });
   } catch (err: any) {
-    res.status(500).json({ message: err.message || 'Failed to fetch dashboard data' });
+    sendError({ res, statusCode: 500, message: err.message || 'Failed to fetch dashboard data' });
   }
 };

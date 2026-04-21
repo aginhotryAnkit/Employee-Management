@@ -1,0 +1,385 @@
+{
+  "info": {
+    "name": "Employee Management Dashboard",
+    "description": "Complete API collection for Employee Management Dashboard backend.\n\n**Base URL:** `{{base_url}}`\n\n**How to use:**\n1. Set environment variable `base_url` = `http://localhost:3000` or your deployed URL\n2. Login as HR and copy the token\n3. Set environment variable `token` = `<your_jwt_token>`",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "🏥 Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health",
+              "host": ["{{base_url}}"],
+              "path": ["health"]
+            },
+            "description": "Check if the server is up and running. No authentication required."
+          },
+          "response": [
+            {
+              "name": "Server Up",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"status\": true,\n  \"statusCode\": 200,\n  \"message\": \"Server is up and running\",\n  \"response\": {\n    \"timestamp\": \"2024-01-01T00:00:00.000Z\",\n    \"environment\": \"development\"\n  }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🔐 Auth",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.status && res.response?.token) {",
+                  "  pm.collectionVariables.set('token', res.response.token);",
+                  "  console.log('Token saved:', res.response.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"hr@company.com\",\n  \"password\": \"Hr@12345\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Login with email and password. JWT token is automatically saved to collection variable `token` after successful login."
+          },
+          "response": [
+            {
+              "name": "Login Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"status\": true,\n  \"statusCode\": 200,\n  \"message\": \"Login successful\",\n  \"response\": {\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n    \"user\": {\n      \"id\": \"uuid\",\n      \"name\": \"Super HR\",\n      \"email\": \"hr@company.com\",\n      \"role\": \"hr\",\n      \"is_active\": true\n    }\n  }\n}"
+            },
+            {
+              "name": "Invalid Credentials",
+              "status": "Unauthorized",
+              "code": 401,
+              "body": "{\n  \"status\": false,\n  \"statusCode\": 401,\n  \"message\": \"Invalid credentials\",\n  \"error\": []\n}"
+            },
+            {
+              "name": "Validation Failed",
+              "status": "Bad Request",
+              "code": 400,
+              "body": "{\n  \"status\": false,\n  \"statusCode\": 400,\n  \"message\": \"Validation failed\",\n  \"error\": [\"email must be a valid email\"]\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "👥 Users",
+      "item": [
+        {
+          "name": "Create Employee",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Neha Singh\",\n  \"email\": \"neha@company.com\",\n  \"role_id\": \"<role-uuid>\",\n  \"department_id\": \"<department-uuid>\",\n  \"manager_id\": \"<manager-uuid>\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/users",
+              "host": ["{{base_url}}"],
+              "path": ["api", "users"]
+            },
+            "description": "HR creates a new employee. Employee is created as inactive with no password. An invite token is returned which must be shared with the employee to set their password.\n\n**Access:** HR only"
+          },
+          "response": [
+            {
+              "name": "Employee Created",
+              "status": "Created",
+              "code": 201,
+              "body": "{\n  \"status\": true,\n  \"statusCode\": 201,\n  \"message\": \"Employee created. Invite token generated.\",\n  \"response\": {\n    \"user\": {\n      \"id\": \"uuid\",\n      \"name\": \"Neha Singh\",\n      \"email\": \"neha@company.com\"\n    },\n    \"invite_token\": \"abc123def456...\"\n  }\n}"
+            },
+            {
+              "name": "Email Already Exists",
+              "status": "Conflict",
+              "code": 409,
+              "body": "{\n  \"status\": false,\n  \"statusCode\": 409,\n  \"message\": \"Email already exists\",\n  \"error\": []\n}"
+            }
+          ]
+        },
+        {
+          "name": "Set Password (Invite Token)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"<invite-token>\",\n  \"password\": \"MyPassword@123\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/users/set-password",
+              "host": ["{{base_url}}"],
+              "path": ["api", "users", "set-password"]
+            },
+            "description": "Employee sets their password using the invite token received from HR. After this the account becomes active and employee can login.\n\n**Access:** Public — no auth required"
+          },
+          "response": [
+            {
+              "name": "Password Set",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"status\": true,\n  \"statusCode\": 200,\n  \"message\": \"Password set successfully. You can now login.\",\n  \"response\": []\n}"
+            },
+            {
+              "name": "Invalid Token",
+              "status": "Bad Request",
+              "code": 400,
+              "body": "{\n  \"status\": false,\n  \"statusCode\": 400,\n  \"message\": \"Invalid or expired invite token\",\n  \"error\": []\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/users",
+              "host": ["{{base_url}}"],
+              "path": ["api", "users"]
+            },
+            "description": "Fetch all users with role, department and manager details.\n\n**Access:** HR sees all employees. Manager sees only their team."
+          },
+          "response": [
+            {
+              "name": "Users List",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"status\": true,\n  \"statusCode\": 200,\n  \"message\": \"Users fetched successfully\",\n  \"response\": [\n    {\n      \"id\": \"uuid\",\n      \"name\": \"Neha Singh\",\n      \"email\": \"neha@company.com\",\n      \"is_active\": true,\n      \"role\": { \"name\": \"employee\" },\n      \"department\": { \"name\": \"Engineering\" },\n      \"manager\": { \"id\": \"uuid\", \"name\": \"Aman Gupta\", \"email\": \"aman@company.com\" }\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/users/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "users", ":id"],
+              "variable": [
+                { "key": "id", "value": "<user-uuid>", "description": "UUID of the user to delete" }
+              ]
+            },
+            "description": "Delete an employee by ID.\n\n**Access:** HR only"
+          },
+          "response": [
+            {
+              "name": "User Deleted",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"status\": true,\n  \"statusCode\": 200,\n  \"message\": \"User deleted successfully\",\n  \"response\": []\n}"
+            },
+            {
+              "name": "User Not Found",
+              "status": "Not Found",
+              "code": 404,
+              "body": "{\n  \"status\": false,\n  \"statusCode\": 404,\n  \"message\": \"User not found\",\n  \"error\": []\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🏢 Departments",
+      "item": [
+        {
+          "name": "Get All Departments",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/departments",
+              "host": ["{{base_url}}"],
+              "path": ["api", "departments"]
+            },
+            "description": "Fetch all departments.\n\n**Access:** All authenticated users"
+          },
+          "response": [
+            {
+              "name": "Departments List",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"status\": true,\n  \"statusCode\": 200,\n  \"message\": \"Departments fetched successfully\",\n  \"response\": [\n    { \"id\": \"uuid\", \"name\": \"Engineering\" },\n    { \"id\": \"uuid\", \"name\": \"Human Resources\" },\n    { \"id\": \"uuid\", \"name\": \"Finance\" },\n    { \"id\": \"uuid\", \"name\": \"Design\" }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Create Department",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Engineering\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/departments",
+              "host": ["{{base_url}}"],
+              "path": ["api", "departments"]
+            },
+            "description": "Create a new department.\n\n**Access:** HR only"
+          },
+          "response": [
+            {
+              "name": "Department Created",
+              "status": "Created",
+              "code": 201,
+              "body": "{\n  \"status\": true,\n  \"statusCode\": 201,\n  \"message\": \"Department created\",\n  \"response\": { \"id\": \"uuid\", \"name\": \"Engineering\" }\n}"
+            },
+            {
+              "name": "Already Exists",
+              "status": "Conflict",
+              "code": 409,
+              "body": "{\n  \"status\": false,\n  \"statusCode\": 409,\n  \"message\": \"Department already exists\",\n  \"error\": []\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Department",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Product Engineering\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/departments/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "departments", ":id"],
+              "variable": [
+                { "key": "id", "value": "<department-uuid>", "description": "UUID of the department to update" }
+              ]
+            },
+            "description": "Update a department name by ID.\n\n**Access:** HR only"
+          },
+          "response": [
+            {
+              "name": "Department Updated",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"status\": true,\n  \"statusCode\": 200,\n  \"message\": \"Department updated\",\n  \"response\": { \"id\": \"uuid\", \"name\": \"Product Engineering\" }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete Department",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/departments/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "departments", ":id"],
+              "variable": [
+                { "key": "id", "value": "<department-uuid>", "description": "UUID of the department to delete" }
+              ]
+            },
+            "description": "Delete a department by ID.\n\n**Access:** HR only"
+          },
+          "response": [
+            {
+              "name": "Department Deleted",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"status\": true,\n  \"statusCode\": 200,\n  \"message\": \"Department deleted\",\n  \"response\": []\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "📊 Dashboard",
+      "item": [
+        {
+          "name": "Get Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/dashboard",
+              "host": ["{{base_url}}"],
+              "path": ["api", "dashboard"]
+            },
+            "description": "Get complete dashboard data including summary counts, recent employees, pending invites and department stats.\n\n**Access:** HR and Manager only"
+          },
+          "response": [
+            {
+              "name": "Dashboard Data",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"status\": true,\n  \"statusCode\": 200,\n  \"message\": \"Dashboard fetched successfully\",\n  \"response\": {\n    \"summary\": {\n      \"totalEmployees\": 25,\n      \"activeEmployees\": 22,\n      \"pendingInvites\": 3,\n      \"departments\": 4\n    },\n    \"recentEmployees\": [\n      { \"id\": \"uuid\", \"name\": \"Neha Singh\", \"role\": \"employee\", \"status\": \"Pending Invite\" },\n      { \"id\": \"uuid\", \"name\": \"Aman Gupta\", \"role\": \"manager\", \"status\": \"Active\" }\n    ],\n    \"pendingInvites\": [\n      { \"email\": \"neha@company.com\", \"role\": \"employee\", \"expiresIn\": \"12 hours\" }\n    ],\n    \"departmentStats\": [\n      { \"department\": \"Engineering\", \"count\": 12 },\n      { \"department\": \"Human Resources\", \"count\": 5 },\n      { \"department\": \"Finance\", \"count\": 4 },\n      { \"department\": \"Design\", \"count\": 4 }\n    ]\n  }\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

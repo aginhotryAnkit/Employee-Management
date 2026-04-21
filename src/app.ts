@@ -1,6 +1,7 @@
 import express, { Application, Request, Response, NextFunction } from 'express';
 import { helmetMiddleware, corsMiddleware, rateLimiter } from './middlewares/securityMiddleware';
 import routes from './routes';
+import { sendSuccess, sendError } from './utils/response';
 
 const app: Application = express();
 
@@ -18,23 +19,26 @@ app.use('/api', routes);
 
 // Health check
 app.get('/health', (_req: Request, res: Response) => {
-  res.status(200).json({
-    status: 'ok',
+  sendSuccess({
+    res,
+    statusCode: 200,
     message: 'Server is up and running',
-    timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development',
+    data: {
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV || 'development',
+    },
   });
 });
 
 // 404
 app.use((_req: Request, res: Response) => {
-  res.status(404).json({ message: 'Route not found' });
+  sendError({ res, statusCode: 404, message: 'Route not found' });
 });
 
 // Global error handler
 app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
   console.error(err.stack);
-  res.status(500).json({ message: 'Internal server error' });
+  sendError({ res, statusCode: 500, message: 'Internal server error' });
 });
 
 export default app;
