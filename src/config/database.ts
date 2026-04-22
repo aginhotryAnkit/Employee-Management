@@ -1,6 +1,8 @@
 import { Sequelize } from 'sequelize';
 import pg from 'pg';
 
+const isProduction = process.env.NODE_ENV === 'production';
+
 const sequelize = new Sequelize(
   process.env.DB_NAME as string,
   process.env.DB_USER as string,
@@ -10,13 +12,10 @@ const sequelize = new Sequelize(
     port: Number(process.env.DB_PORT),
     dialect: 'postgres',
     dialectModule: pg,
-    logging: process.env.NODE_ENV === 'development' ? console.log : false,
-    dialectOptions: {
-      ssl: {
-        require: true,
-        rejectUnauthorized: false,
-      },
-    },
+    logging: isProduction ? false : console.log,
+    dialectOptions: isProduction
+      ? { ssl: { require: true, rejectUnauthorized: false } }
+      : {},
   }
 );
 
