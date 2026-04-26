@@ -5,7 +5,7 @@ import rateLimit from 'express-rate-limit';
 export const helmetMiddleware = helmet();
 
 export const corsMiddleware = cors({
-  origin: process.env.ALLOWED_ORIGINS?.split(',') || '*',
+  origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 });

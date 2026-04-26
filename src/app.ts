@@ -8,6 +8,7 @@ const app: Application = express();
 // Security
 app.use(helmetMiddleware);
 app.use(corsMiddleware);
+app.options('*', corsMiddleware); // handle preflight requests
 app.use(rateLimiter);
 
 // Body parsing

@@ -1,0 +1,43 @@
+{
+    "status": true,
+    "statusCode": 200,
+    "message": "Departments fetched successfully",
+    "response": [
+        {
+            "id": "e871b4b8-5c50-40ee-a438-20ced8a486ba",
+            "name": "Human Resources",
+            "createdAt": "2026-04-22T18:23:21.476Z",
+            "updatedAt": "2026-04-22T18:23:21.476Z"
+        },
+        {
+            "id": "a7d8ed8f-eacf-4d2b-aa9c-1e7e94462f25",
+            "name": "Engineering",
+            "createdAt": "2026-04-22T18:23:21.476Z",
+            "updatedAt": "2026-04-22T18:23:21.476Z"
+        },
+        {
+            "id": "f1132de8-c0e7-4cb7-b5d4-d1c32b910e99",
+            "name": "Marketing",
+            "createdAt": "2026-04-22T18:23:21.476Z",
+            "updatedAt": "2026-04-22T18:23:21.476Z"
+        },
+        {
+            "id": "263d1525-31f2-46e1-8b6f-2ea9e387ca26",
+            "name": "Sales",
+            "createdAt": "2026-04-22T18:23:21.476Z",
+            "updatedAt": "2026-04-22T18:23:21.476Z"
+        },
+        {
+            "id": "ba3f0c53-4aea-44a9-8ee4-bfc93eeed072",
+            "name": "Finance",
+            "createdAt": "2026-04-22T18:23:21.476Z",
+            "updatedAt": "2026-04-22T18:23:21.476Z"
+        },
+        {
+            "id": "75f3f809-a9ed-436c-86cf-92ac55b21b1d",
+            "name": "Design",
+            "createdAt": "2026-04-22T18:23:21.476Z",
+            "updatedAt": "2026-04-22T18:23:21.476Z"
+        }
+    ]
+}
