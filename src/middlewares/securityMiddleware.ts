@@ -2,7 +2,9 @@ import helmet from 'helmet';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
 
-export const helmetMiddleware = helmet();
+export const helmetMiddleware = helmet({
+  crossOriginResourcePolicy: false,
+});
 
 export const corsMiddleware = cors({
   origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : '*',
