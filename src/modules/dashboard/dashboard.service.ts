@@ -35,8 +35,12 @@ export const getDashboardService = async (): Promise<IDashboardResponse> => {
     User.findAll({
       limit: 5,
       order: [['createdAt', 'DESC']],
-      attributes: ['id', 'name', 'is_active'],
-      include: [{ model: Role, as: 'role', attributes: ['name'] }],
+      attributes: ['id', 'name', 'email', 'is_active'],
+      include: [
+        { model: Role, as: 'role', attributes: ['name'] },
+        { model: Department, as: 'department', attributes: ['name'] },
+        { model: User, as: 'manager', attributes: ['name'] },
+      ],
     }),
 
     // pending invites with user email and role
@@ -62,8 +66,12 @@ export const getDashboardService = async (): Promise<IDashboardResponse> => {
   const recentEmployees: IRecentEmployee[] = recentUsers.map((u: any) => ({
     id: u.id,
     name: u.name,
+    email: u.email,
     role: u.role?.name ?? 'N/A',
+    department: u.department?.name ?? null,
+    manager: u.manager?.name ?? null,
     status: u.is_active ? 'Active' : 'Pending Invite',
+    avatar: u.avatar ?? null,
   }));
 
   const pendingInvitesList: IPendingInvite[] = pendingInvites.map((inv: any) => ({
@@ -79,10 +87,10 @@ export const getDashboardService = async (): Promise<IDashboardResponse> => {
 
   return {
     summary: {
-      totalEmployees,
-      activeEmployees,
-      pendingInvites: pendingInvitesCount,
-      departments: departmentsCount,
+      totalEmployees: { title: 'Total Employees', count: String(totalEmployees) },
+      activeEmployees: { title: 'Active Employees', count: String(activeEmployees) },
+      pendingInvites: { title: 'Pending Invites', count: String(pendingInvitesCount) },
+      departments: { title: 'Departments', count: String(departmentsCount) },
     },
     recentEmployees,
     pendingInvites: pendingInvitesList,
