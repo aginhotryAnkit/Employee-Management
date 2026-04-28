@@ -4,6 +4,15 @@ import rateLimit from 'express-rate-limit';
 
 export const helmetMiddleware = helmet({
   crossOriginResourcePolicy: false,
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", 'https://unpkg.com'],
+      styleSrc: ["'self'", "'unsafe-inline'", 'https://unpkg.com'],
+      imgSrc: ["'self'", 'data:', 'https://unpkg.com'],
+      workerSrc: ["'self'", 'blob:'],
+    },
+  },
 });
 
 export const corsMiddleware = cors({
