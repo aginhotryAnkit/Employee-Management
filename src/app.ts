@@ -1,6 +1,8 @@
 import express, { Application, Request, Response, NextFunction } from 'express';
+import swaggerUi from 'swagger-ui-express';
 import { helmetMiddleware, corsMiddleware, rateLimiter } from './middlewares/securityMiddleware';
 import routes from './routes';
+import { swaggerSpec } from './config/swagger';
 import { sendSuccess, sendError } from './utils/response';
 
 const app: Application = express();
@@ -18,7 +20,32 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 app.use('/api', routes);
 
+// Swagger docs
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+  customSiteTitle: 'Employee Management API Docs',
+  swaggerOptions: { persistAuthorization: true },
+}));
+
 // Health check
+/**
+ * @swagger
+ * /health:
+ *   get:
+ *     tags: [Health]
+ *     summary: Check server health
+ *     responses:
+ *       200:
+ *         description: Server is up
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: true
+ *               statusCode: 200
+ *               message: Server is up and running
+ *               response:
+ *                 timestamp: 2024-01-01T00:00:00.000Z
+ *                 environment: development
+ */
 app.get('/health', (_req: Request, res: Response) => {
   sendSuccess({
     res,
