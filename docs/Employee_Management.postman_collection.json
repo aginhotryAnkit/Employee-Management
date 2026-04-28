@@ -1,20 +1,12 @@
 {
   "info": {
     "name": "Employee Management Dashboard",
-    "description": "Complete API collection for Employee Management Dashboard backend.\n\n**Base URL:** `{{base_url}}`\n\n**How to use:**\n1. Set environment variable `base_url` = `http://localhost:3000` or your deployed URL\n2. Login as HR and copy the token\n3. Set environment variable `token` = `<your_jwt_token>`",
+    "description": "Complete API collection for Employee Management Dashboard backend.\n\n**Base URL:** `{{base_url}}`\n\n**How to use:**\n1. Set collection variable `base_url` = `http://localhost:3000` or your deployed URL\n2. Hit Login — token is auto-saved to collection variable `token`",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
-    {
-      "key": "base_url",
-      "value": "http://localhost:3000",
-      "type": "string"
-    },
-    {
-      "key": "token",
-      "value": "",
-      "type": "string"
-    }
+    { "key": "base_url", "value": "http://localhost:3000", "type": "string" },
+    { "key": "token", "value": "", "type": "string" }
   ],
   "item": [
     {
@@ -30,7 +22,7 @@
               "host": ["{{base_url}}"],
               "path": ["health"]
             },
-            "description": "Check if the server is up and running. No authentication required."
+            "description": "Check if the server is up. No authentication required."
           },
           "response": [
             {
@@ -65,9 +57,7 @@
           ],
           "request": {
             "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" }
-            ],
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"email\": \"hr@company.com\",\n  \"password\": \"Hr@12345\"\n}",
@@ -78,7 +68,7 @@
               "host": ["{{base_url}}"],
               "path": ["api", "auth", "login"]
             },
-            "description": "Login with email and password. JWT token is automatically saved to collection variable `token` after successful login."
+            "description": "Login with email and password. JWT token is automatically saved to collection variable `token`.\n\n**Access:** Public"
           },
           "response": [
             {
@@ -92,12 +82,6 @@
               "status": "Unauthorized",
               "code": 401,
               "body": "{\n  \"status\": false,\n  \"statusCode\": 401,\n  \"message\": \"Invalid credentials\",\n  \"error\": []\n}"
-            },
-            {
-              "name": "Validation Failed",
-              "status": "Bad Request",
-              "code": 400,
-              "body": "{\n  \"status\": false,\n  \"statusCode\": 400,\n  \"message\": \"Validation failed\",\n  \"error\": [\"email must be a valid email\"]\n}"
             }
           ]
         }
@@ -124,7 +108,7 @@
               "host": ["{{base_url}}"],
               "path": ["api", "users"]
             },
-            "description": "HR creates a new employee. Employee is created as inactive with no password. An invite token is returned which must be shared with the employee to set their password.\n\n**Access:** HR only"
+            "description": "HR creates a new employee. Employee is inactive until they set their password via the invite token.\n\n**Access:** HR only"
           },
           "response": [
             {
@@ -145,9 +129,7 @@
           "name": "Set Password (Invite Token)",
           "request": {
             "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" }
-            ],
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"token\": \"<invite-token>\",\n  \"password\": \"MyPassword@123\"\n}",
@@ -158,7 +140,7 @@
               "host": ["{{base_url}}"],
               "path": ["api", "users", "set-password"]
             },
-            "description": "Employee sets their password using the invite token received from HR. After this the account becomes active and employee can login.\n\n**Access:** Public — no auth required"
+            "description": "Employee sets their password using the invite token. Account becomes active after this.\n\n**Access:** Public"
           },
           "response": [
             {
@@ -179,15 +161,13 @@
           "name": "Get All Users",
           "request": {
             "method": "GET",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{token}}" }
-            ],
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
             "url": {
               "raw": "{{base_url}}/api/users",
               "host": ["{{base_url}}"],
               "path": ["api", "users"]
             },
-            "description": "Fetch all users with role, department and manager details.\n\n**Access:** HR sees all employees. Manager sees only their team."
+            "description": "Fetch all users with role, department and manager details.\n\n**Access:** HR sees all. Manager sees their team only."
           },
           "response": [
             {
@@ -199,12 +179,44 @@
           ]
         },
         {
+          "name": "Get Managers (Dropdown + Search)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{base_url}}/api/users/managers?search=",
+              "host": ["{{base_url}}"],
+              "path": ["api", "users", "managers"],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "",
+                  "description": "Optional. Filter managers by name or email (case-insensitive). e.g. ?search=rohit"
+                }
+              ]
+            },
+            "description": "Fetch all managers for the manager dropdown on the Add Employee form. Supports live search via `?search=` query param.\n\n**Access:** HR only"
+          },
+          "response": [
+            {
+              "name": "Managers List",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"status\": true,\n  \"statusCode\": 200,\n  \"message\": \"Managers fetched successfully\",\n  \"response\": [\n    {\n      \"id\": \"uuid\",\n      \"name\": \"Rohit Sharma\",\n      \"email\": \"rohit@company.com\",\n      \"department\": { \"name\": \"Engineering\" }\n    },\n    {\n      \"id\": \"uuid\",\n      \"name\": \"Alice Johnson\",\n      \"email\": \"alice@company.com\",\n      \"department\": { \"name\": \"Marketing\" }\n    }\n  ]\n}"
+            },
+            {
+              "name": "Managers Search Result",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"status\": true,\n  \"statusCode\": 200,\n  \"message\": \"Managers fetched successfully\",\n  \"response\": [\n    {\n      \"id\": \"uuid\",\n      \"name\": \"Rohit Sharma\",\n      \"email\": \"rohit@company.com\",\n      \"department\": { \"name\": \"Engineering\" }\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
           "name": "Delete User",
           "request": {
             "method": "DELETE",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{token}}" }
-            ],
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
             "url": {
               "raw": "{{base_url}}/api/users/:id",
               "host": ["{{base_url}}"],
@@ -233,21 +245,45 @@
       ]
     },
     {
+      "name": "🎭 Roles",
+      "item": [
+        {
+          "name": "Get All Roles (Dropdown)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{base_url}}/api/roles",
+              "host": ["{{base_url}}"],
+              "path": ["api", "roles"]
+            },
+            "description": "Fetch all roles for the role dropdown on the Add Employee form.\n\n**Access:** All authenticated users"
+          },
+          "response": [
+            {
+              "name": "Roles List",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"status\": true,\n  \"statusCode\": 200,\n  \"message\": \"Roles fetched successfully\",\n  \"response\": [\n    { \"id\": \"uuid\", \"name\": \"employee\" },\n    { \"id\": \"uuid\", \"name\": \"hr\" },\n    { \"id\": \"uuid\", \"name\": \"manager\" }\n  ]\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "🏢 Departments",
       "item": [
         {
-          "name": "Get All Departments",
+          "name": "Get All Departments (Dropdown)",
           "request": {
             "method": "GET",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{token}}" }
-            ],
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
             "url": {
               "raw": "{{base_url}}/api/departments",
               "host": ["{{base_url}}"],
               "path": ["api", "departments"]
             },
-            "description": "Fetch all departments.\n\n**Access:** All authenticated users"
+            "description": "Fetch all departments. Also used for the department dropdown on the Add Employee form.\n\n**Access:** All authenticated users"
           },
           "response": [
             {
@@ -329,9 +365,7 @@
           "name": "Delete Department",
           "request": {
             "method": "DELETE",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{token}}" }
-            ],
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
             "url": {
               "raw": "{{base_url}}/api/departments/:id",
               "host": ["{{base_url}}"],
@@ -360,22 +394,20 @@
           "name": "Get Dashboard",
           "request": {
             "method": "GET",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{token}}" }
-            ],
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
             "url": {
               "raw": "{{base_url}}/api/dashboard",
               "host": ["{{base_url}}"],
               "path": ["api", "dashboard"]
             },
-            "description": "Get complete dashboard data including summary counts, recent employees, pending invites and department stats.\n\n**Access:** HR and Manager only"
+            "description": "Get complete dashboard data — summary cards, recent employees, pending invites, and department stats.\n\n**Access:** HR and Manager only"
           },
           "response": [
             {
               "name": "Dashboard Data",
               "status": "OK",
               "code": 200,
-              "body": "{\n  \"status\": true,\n  \"statusCode\": 200,\n  \"message\": \"Dashboard fetched successfully\",\n  \"response\": {\n    \"summary\": {\n      \"totalEmployees\": 25,\n      \"activeEmployees\": 22,\n      \"pendingInvites\": 3,\n      \"departments\": 4\n    },\n    \"recentEmployees\": [\n      { \"id\": \"uuid\", \"name\": \"Neha Singh\", \"role\": \"employee\", \"status\": \"Pending Invite\" },\n      { \"id\": \"uuid\", \"name\": \"Aman Gupta\", \"role\": \"manager\", \"status\": \"Active\" }\n    ],\n    \"pendingInvites\": [\n      { \"email\": \"neha@company.com\", \"role\": \"employee\", \"expiresIn\": \"12 hours\" }\n    ],\n    \"departmentStats\": [\n      { \"department\": \"Engineering\", \"count\": 12 },\n      { \"department\": \"Human Resources\", \"count\": 5 },\n      { \"department\": \"Finance\", \"count\": 4 },\n      { \"department\": \"Design\", \"count\": 4 }\n    ]\n  }\n}"
+              "body": "{\n  \"status\": true,\n  \"statusCode\": 200,\n  \"message\": \"Dashboard fetched successfully\",\n  \"response\": {\n    \"summary\": {\n      \"totalEmployees\": { \"title\": \"Total Employees\", \"count\": \"256\" },\n      \"activeEmployees\": { \"title\": \"Active Employees\", \"count\": \"226\" },\n      \"pendingInvites\": { \"title\": \"Pending Invites\", \"count\": \"56\" },\n      \"departments\": { \"title\": \"Departments\", \"count\": \"14\" }\n    },\n    \"recentEmployees\": [\n      {\n        \"id\": \"uuid\",\n        \"name\": \"Kajal Jaiswal\",\n        \"email\": \"kajal@company.com\",\n        \"role\": \"hr\",\n        \"department\": \"Human Resources\",\n        \"manager\": null,\n        \"status\": \"Active\",\n        \"avatar\": null\n      },\n      {\n        \"id\": \"uuid\",\n        \"name\": \"Rohit Sharma\",\n        \"email\": \"rohit@company.com\",\n        \"role\": \"manager\",\n        \"department\": \"Engineering\",\n        \"manager\": null,\n        \"status\": \"Active\",\n        \"avatar\": null\n      }\n    ],\n    \"pendingInvites\": [\n      { \"email\": \"neha@company.com\", \"role\": \"employee\", \"expiresIn\": \"12 hours\" },\n      { \"email\": \"newhire@company.com\", \"role\": \"employee\", \"expiresIn\": \"1 day\" }\n    ],\n    \"departmentStats\": [\n      { \"department\": \"Engineering\", \"count\": 12 },\n      { \"department\": \"Human Resources\", \"count\": 5 },\n      { \"department\": \"Finance\", \"count\": 4 },\n      { \"department\": \"Design\", \"count\": 4 }\n    ]\n  }\n}"
             }
           ]
         }

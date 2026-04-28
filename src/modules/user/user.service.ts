@@ -73,3 +73,23 @@ export const deleteUserService = async (id: string) => {
   await user.destroy();
   return { message: 'User deleted successfully' };
 };
+
+export const getManagersService = async (search?: string) => {
+  const managerRole = await Role.findOne({ where: { name: 'manager' } });
+  if (!managerRole) return [];
+
+  const where: any = { role_id: managerRole.id };
+  if (search) {
+    where[Op.or] = [
+      { name: { [Op.iLike]: `%${search}%` } },
+      { email: { [Op.iLike]: `%${search}%` } },
+    ];
+  }
+
+  return await User.findAll({
+    where,
+    attributes: ['id', 'name', 'email'],
+    include: [{ model: Department, as: 'department', attributes: ['name'] }],
+    order: [['name', 'ASC']],
+  });
+};

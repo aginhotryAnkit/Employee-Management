@@ -1,6 +1,6 @@
 import { Response } from 'express';
 import { AuthRequest } from '../../middlewares/authMiddleware';
-import { createUserService, setPasswordService, getUsersService, deleteUserService } from './user.service';
+import { createUserService, setPasswordService, getUsersService, deleteUserService, getManagersService } from './user.service';
 import { validateCreateUser, validateSetPassword } from './user.validator';
 import { sendSuccess, sendError } from '../../utils/response';
 
@@ -43,5 +43,14 @@ export const deleteUser = async (req: AuthRequest, res: Response): Promise<void>
     sendSuccess({ res, statusCode: 200, message: result.message });
   } catch (err: any) {
     sendError({ res, statusCode: err.status || 500, message: err.message || 'Failed to delete user' });
+  }
+};
+
+export const getManagers = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const managers = await getManagersService(req.query.search as string | undefined);
+    sendSuccess({ res, statusCode: 200, message: 'Managers fetched successfully', data: managers });
+  } catch (err: any) {
+    sendError({ res, statusCode: 500, message: 'Failed to fetch managers' });
   }
 };
