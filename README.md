@@ -9,9 +9,10 @@
 [![Express](https://img.shields.io/badge/Express-4.x-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16.x-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org)
 [![Sequelize](https://img.shields.io/badge/Sequelize-6.x-52B0E7?style=for-the-badge&logo=sequelize&logoColor=white)](https://sequelize.org)
+[![Swagger](https://img.shields.io/badge/Swagger-OpenAPI%203.0-85EA2D?style=for-the-badge&logo=swagger&logoColor=black)](https://employee-management-khaki-tau.vercel.app/api-docs)
 [![Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://employee-management-khaki-tau.vercel.app)
 
-[Live API](https://employee-management-khaki-tau.vercel.app/health) · [API Docs](#-api-reference) · [Quick Start](#-quick-start)
+[Live API](https://employee-management-khaki-tau.vercel.app/health) · [API Docs](https://employee-management-khaki-tau.vercel.app/api-docs) · [Quick Start](#-quick-start)
 
 </div>
 
@@ -28,6 +29,7 @@ A backend API that handles the full lifecycle of employee management — from HR
 - 📧 **Invite System** — HR creates employees, a token-based invite flow lets them set their password
 - 🏬 **Department Management** — full CRUD for departments
 - 📊 **Dashboard API** — summary stats with department breakdown and pending invites
+- 📖 **Swagger UI** — interactive API documentation at `/api-docs`
 - 🛡️ **Security** — Helmet, CORS, and rate limiting (100 req / 15 min) out of the box
 - 🗄️ **Sequelize ORM** — migrations and seeders for reproducible DB setup
 
@@ -44,6 +46,7 @@ A backend API that handles the full lifecycle of employee management — from HR
 | Database | PostgreSQL |
 | Auth | JWT + bcryptjs |
 | Validation | Joi |
+| Documentation | Swagger / OpenAPI 3.0 |
 | Security | Helmet · CORS · express-rate-limit |
 | Deployment | Vercel |
 
@@ -55,7 +58,8 @@ A backend API that handles the full lifecycle of employee management — from HR
 ├── src/
 │   ├── config/
 │   │   ├── database.ts          # Sequelize DB connection
-│   │   └── sequelize.ts         # Sequelize CLI config
+│   │   ├── sequelize.ts         # Sequelize CLI config
+│   │   └── swagger.ts           # Swagger/OpenAPI config
 │   ├── database/
 │   │   ├── migrations/          # Table creation migrations
 │   │   ├── models/              # Sequelize models
@@ -71,6 +75,7 @@ A backend API that handles the full lifecycle of employee management — from HR
 │   ├── modules/
 │   │   ├── auth/                # Login
 │   │   ├── user/                # Employee CRUD + invite flow
+│   │   ├── role/                # Roles list
 │   │   ├── department/          # Department CRUD
 │   │   └── dashboard/           # Stats & summary
 │   ├── routes/
@@ -80,8 +85,9 @@ A backend API that handles the full lifecycle of employee management — from HR
 │   ├── app.ts                   # Express app setup
 │   └── server.ts                # Entry point
 ├── docs/
-│   └── api/
-│       └── CURLS.md             # Full cURL reference
+│   ├── api/
+│   │   └── CURLS.md             # Full cURL reference
+│   └── Employee_Management.postman_collection.json
 ├── .env.example
 ├── .sequelizerc
 ├── vercel.json
@@ -209,6 +215,21 @@ npm run seed
 **Base URL (Production):** `https://employee-management-khaki-tau.vercel.app`  
 **Base URL (Local):** `http://localhost:3000`
 
+### 📖 Interactive API Documentation
+
+**Swagger UI:** [https://employee-management-khaki-tau.vercel.app/api-docs](https://employee-management-khaki-tau.vercel.app/api-docs)
+
+Explore and test all endpoints directly in your browser with the interactive Swagger UI.
+
+**How to use:**
+1. Open `/api-docs`
+2. Click **Authorize** 🔒 button
+3. Login via `POST /api/auth/login` → copy the token
+4. Paste token in the Authorize dialog (without "Bearer" prefix)
+5. All protected endpoints will now include your JWT automatically
+
+---
+
 ### Health Check
 
 ```
@@ -239,7 +260,16 @@ curl -X POST http://localhost:3000/api/auth/login \
 | `POST` | `/api/users` | HR only | Create employee + generate invite token |
 | `POST` | `/api/users/set-password` | Public | Employee sets password via invite token |
 | `GET` | `/api/users` | HR · Manager | HR sees all, Manager sees their team |
+| `GET` | `/api/users/managers` | HR only | List managers (for dropdown with search) |
 | `DELETE` | `/api/users/:id` | HR only | Delete an employee |
+
+---
+
+### Roles
+
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| `GET` | `/api/roles` | All authenticated | List all roles (for dropdown) |
 
 ---
 
@@ -247,7 +277,7 @@ curl -X POST http://localhost:3000/api/auth/login \
 
 | Method | Endpoint | Access | Description |
 |---|---|---|---|
-| `GET` | `/api/departments` | All authenticated | List all departments |
+| `GET` | `/api/departments` | All authenticated | List all departments (for dropdown) |
 | `POST` | `/api/departments` | HR only | Create a department |
 | `PUT` | `/api/departments/:id` | HR only | Update a department |
 | `DELETE` | `/api/departments/:id` | HR only | Delete a department |
@@ -270,7 +300,9 @@ curl -X POST http://localhost:3000/api/auth/login \
 | `POST /api/users` | ✅ | ❌ | ❌ |
 | `POST /api/users/set-password` | ✅ | ✅ | ✅ |
 | `GET /api/users` | ✅ all | ✅ team | ❌ |
+| `GET /api/users/managers` | ✅ | ❌ | ❌ |
 | `DELETE /api/users/:id` | ✅ | ❌ | ❌ |
+| `GET /api/roles` | ✅ | ✅ | ✅ |
 | `GET /api/departments` | ✅ | ✅ | ✅ |
 | `POST /api/departments` | ✅ | ❌ | ❌ |
 | `PUT /api/departments/:id` | ✅ | ❌ | ❌ |

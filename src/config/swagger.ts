@@ -13,12 +13,8 @@ const options: swaggerJsdoc.Options = {
       },
     },
     servers: [
-      {
-        url: process.env.NODE_ENV === 'production' 
-          ? 'https://employee-management-khaki-tau.vercel.app' 
-          : 'http://localhost:3000',
-        description: process.env.NODE_ENV === 'production' ? 'Production server' : 'Development server',
-      },
+      { url: 'https://employee-management-khaki-tau.vercel.app', description: 'Production' },
+      { url: 'http://localhost:3000', description: 'Local' },
     ],
     components: {
       securitySchemes: {
@@ -83,7 +79,14 @@ const options: swaggerJsdoc.Options = {
       { name: 'Dashboard', description: 'Dashboard statistics' },
     ],
   },
-  apis: ['./src/app.ts', './src/routes/*.ts', './src/modules/**/*.routes.ts'],
+  // Points to compiled JS in dist/ so it works on Vercel at runtime
+  // Also points to src/ so it works locally with ts-node-dev
+  apis: [
+    './dist/app.js',
+    './dist/modules/**/*.routes.js',
+    './src/app.ts',
+    './src/modules/**/*.routes.ts',
+  ],
 };
 
 export const swaggerSpec = swaggerJsdoc(options);
