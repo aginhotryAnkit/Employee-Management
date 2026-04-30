@@ -7,7 +7,7 @@ module.exports = {
       name:        { type: DataTypes.STRING, allowNull: false, unique: true },
       code:        { type: DataTypes.STRING, allowNull: false, unique: true },
       description: { type: DataTypes.TEXT, allowNull: true },
-      head_id:     { type: DataTypes.UUID, allowNull: true, references: { model: 'users', key: 'id' }, onUpdate: 'CASCADE', onDelete: 'SET NULL' },
+      head_id:     { type: DataTypes.UUID, allowNull: true },
       location:    { type: DataTypes.STRING, allowNull: true },
       budget:      { type: DataTypes.DECIMAL(12, 2), allowNull: true },
       status:      { type: DataTypes.ENUM('ACTIVE', 'INACTIVE'), defaultValue: 'ACTIVE', allowNull: false },

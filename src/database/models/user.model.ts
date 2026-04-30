@@ -52,5 +52,6 @@ User.belongsTo(Department, { foreignKey: 'department_id', as: 'department' });
 User.belongsTo(User, { foreignKey: 'manager_id', as: 'manager' });
 User.hasMany(UserInvite, { foreignKey: 'user_id', as: 'invites' });
 UserInvite.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+Department.belongsTo(User, { foreignKey: 'head_id', as: 'head' });
 
 export default User;
