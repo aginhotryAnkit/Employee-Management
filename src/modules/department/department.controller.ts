@@ -1,15 +1,15 @@
 import { Response } from 'express';
 import { AuthRequest } from '../../middlewares/authMiddleware';
 import { createDepartmentService, getDepartmentsService, updateDepartmentService, deleteDepartmentService } from './department.service';
-import { validateDepartment } from './department.validator';
+import { validateCreateDepartment, validateUpdateDepartment } from './department.validator';
 import { sendSuccess, sendError } from '../../utils/response';
 
 export const createDepartment = async (req: AuthRequest, res: Response): Promise<void> => {
-  const { valid, errors } = validateDepartment(req.body);
+  const { valid, errors } = validateCreateDepartment(req.body);
   if (!valid) { sendError({ res, statusCode: 400, message: 'Validation failed', errors }); return; }
   try {
-    const result = await createDepartmentService(req.body);
-    sendSuccess({ res, statusCode: 201, message: result.message, data: result.department });
+    const dept = await createDepartmentService(req.body, req.user!.id);
+    sendSuccess({ res, statusCode: 201, message: 'Department created', data: dept });
   } catch (err: any) {
     sendError({ res, statusCode: err.status || 500, message: err.message });
   }
@@ -25,11 +25,11 @@ export const getDepartments = async (_req: AuthRequest, res: Response): Promise<
 };
 
 export const updateDepartment = async (req: AuthRequest, res: Response): Promise<void> => {
-  const { valid, errors } = validateDepartment(req.body);
+  const { valid, errors } = validateUpdateDepartment(req.body);
   if (!valid) { sendError({ res, statusCode: 400, message: 'Validation failed', errors }); return; }
   try {
-    const result = await updateDepartmentService(req.params.id, req.body);
-    sendSuccess({ res, statusCode: 200, message: result.message, data: result.department });
+    const dept = await updateDepartmentService(req.params.id, req.body, req.user!.id);
+    sendSuccess({ res, statusCode: 200, message: 'Department updated', data: dept });
   } catch (err: any) {
     sendError({ res, statusCode: err.status || 500, message: err.message });
   }

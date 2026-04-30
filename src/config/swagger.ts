@@ -217,14 +217,22 @@ export const swaggerSpec = {
     '/api/departments': {
       get: {
         tags: ['Departments'],
-        summary: 'Get all departments for dropdown',
+        summary: 'Get all departments',
         security: [{ bearerAuth: [] }],
         responses: {
           200: {
             description: 'Departments list',
             content: {
               'application/json': {
-                example: { status: true, statusCode: 200, message: 'Departments fetched successfully', response: [{ id: 'uuid', name: 'Engineering' }, { id: 'uuid', name: 'Human Resources' }] },
+                example: {
+                  status: true, statusCode: 200, message: 'Departments fetched successfully',
+                  response: [{
+                    id: 'uuid', name: 'Engineering', code: 'ENG',
+                    description: 'Product development and engineering',
+                    location: 'Floor 2', budget: '1200000.00', status: 'ACTIVE',
+                    head: { id: 'uuid', name: 'Alice Johnson', email: 'alice@company.com' },
+                  }],
+                },
               },
             },
           },
@@ -238,13 +246,25 @@ export const swaggerSpec = {
           required: true,
           content: {
             'application/json': {
-              schema: { type: 'object', required: ['name'], properties: { name: { type: 'string', example: 'Engineering' } } },
+              schema: {
+                type: 'object',
+                required: ['name', 'code'],
+                properties: {
+                  name:        { type: 'string', example: 'Engineering' },
+                  code:        { type: 'string', example: 'ENG' },
+                  description: { type: 'string', example: 'Product development and engineering' },
+                  head_id:     { type: 'string', format: 'uuid', example: '<user-uuid>' },
+                  location:    { type: 'string', example: 'Floor 2' },
+                  budget:      { type: 'number', example: 1200000 },
+                  status:      { type: 'string', enum: ['ACTIVE', 'INACTIVE'], example: 'ACTIVE' },
+                },
+              },
             },
           },
         },
         responses: {
-          201: { description: 'Department created', content: { 'application/json': { example: { status: true, statusCode: 201, message: 'Department created', response: { id: 'uuid', name: 'Engineering' } } } } },
-          409: { description: 'Department already exists' },
+          201: { description: 'Department created', content: { 'application/json': { example: { status: true, statusCode: 201, message: 'Department created', response: { id: 'uuid', name: 'Engineering', code: 'ENG', status: 'ACTIVE' } } } } },
+          409: { description: 'Department name or code already exists' },
         },
       },
     },
@@ -258,12 +278,23 @@ export const swaggerSpec = {
           required: true,
           content: {
             'application/json': {
-              schema: { type: 'object', required: ['name'], properties: { name: { type: 'string', example: 'Product Engineering' } } },
+              schema: {
+                type: 'object',
+                properties: {
+                  name:        { type: 'string', example: 'Product Engineering' },
+                  code:        { type: 'string', example: 'PENG' },
+                  description: { type: 'string' },
+                  head_id:     { type: 'string', format: 'uuid' },
+                  location:    { type: 'string' },
+                  budget:      { type: 'number' },
+                  status:      { type: 'string', enum: ['ACTIVE', 'INACTIVE'] },
+                },
+              },
             },
           },
         },
         responses: {
-          200: { description: 'Department updated', content: { 'application/json': { example: { status: true, statusCode: 200, message: 'Department updated', response: { id: 'uuid', name: 'Product Engineering' } } } } },
+          200: { description: 'Department updated' },
           404: { description: 'Department not found' },
         },
       },
@@ -273,7 +304,7 @@ export const swaggerSpec = {
         security: [{ bearerAuth: [] }],
         parameters: [{ in: 'path', name: 'id', required: true, schema: { type: 'string', format: 'uuid' } }],
         responses: {
-          200: { description: 'Department deleted', content: { 'application/json': { example: { status: true, statusCode: 200, message: 'Department deleted' } } } },
+          200: { description: 'Department deleted' },
           404: { description: 'Department not found' },
         },
       },

@@ -47,12 +47,12 @@ module.exports = {
 
     // Departments
     await queryInterface.bulkInsert('departments', [
-      { id: deptHR,          name: 'Human Resources', createdAt: now, updatedAt: now },
-      { id: deptEngineering, name: 'Engineering',      createdAt: now, updatedAt: now },
-      { id: deptMarketing,   name: 'Marketing',        createdAt: now, updatedAt: now },
-      { id: deptSales,       name: 'Sales',            createdAt: now, updatedAt: now },
-      { id: deptFinance,     name: 'Finance',          createdAt: now, updatedAt: now },
-      { id: deptDesign,      name: 'Design',           createdAt: now, updatedAt: now },
+      { id: deptHR,          name: 'Human Resources', code: 'HR',  description: 'Manages hiring, payroll and employee relations', location: 'Floor 1', budget: 500000.00, status: 'ACTIVE', head_id: null, created_by: null, updated_by: null, createdAt: now, updatedAt: now },
+      { id: deptEngineering, name: 'Engineering',      code: 'ENG', description: 'Product development and engineering',            location: 'Floor 2', budget: 1200000.00, status: 'ACTIVE', head_id: null, created_by: null, updated_by: null, createdAt: now, updatedAt: now },
+      { id: deptMarketing,   name: 'Marketing',        code: 'MKT', description: 'Brand, campaigns and growth',                   location: 'Floor 3', budget: 800000.00, status: 'ACTIVE', head_id: null, created_by: null, updated_by: null, createdAt: now, updatedAt: now },
+      { id: deptSales,       name: 'Sales',            code: 'SLS', description: 'Revenue generation and client relations',        location: 'Floor 3', budget: 900000.00, status: 'ACTIVE', head_id: null, created_by: null, updated_by: null, createdAt: now, updatedAt: now },
+      { id: deptFinance,     name: 'Finance',          code: 'FIN', description: 'Budgeting, accounting and financial planning',   location: 'Floor 4', budget: 600000.00, status: 'ACTIVE', head_id: null, created_by: null, updated_by: null, createdAt: now, updatedAt: now },
+      { id: deptDesign,      name: 'Design',           code: 'DES', description: 'UI/UX and visual design',                       location: 'Floor 2', budget: 400000.00, status: 'ACTIVE', head_id: null, created_by: null, updated_by: null, createdAt: now, updatedAt: now },
     ]);
 
     // Users
