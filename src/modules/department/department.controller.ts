@@ -1,6 +1,6 @@
 import { Response } from 'express';
 import { AuthRequest } from '../../middlewares/authMiddleware';
-import { createDepartmentService, getDepartmentsService, updateDepartmentService, deleteDepartmentService } from './department.service';
+import { createDepartmentService, getDepartmentsService, getDepartmentByIdService, updateDepartmentService, deleteDepartmentService } from './department.service';
 import { validateCreateDepartment, validateUpdateDepartment } from './department.validator';
 import { sendSuccess, sendError } from '../../utils/response';
 
@@ -21,6 +21,15 @@ export const getDepartments = async (_req: AuthRequest, res: Response): Promise<
     sendSuccess({ res, statusCode: 200, message: 'Departments fetched successfully', data: departments });
   } catch (err: any) {
     sendError({ res, statusCode: 500, message: err.message });
+  }
+};
+
+export const getDepartmentById = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const dept = await getDepartmentByIdService(req.params.id);
+    sendSuccess({ res, statusCode: 200, message: 'Department fetched successfully', data: dept });
+  } catch (err: any) {
+    sendError({ res, statusCode: err.status || 500, message: err.message });
   }
 };
 

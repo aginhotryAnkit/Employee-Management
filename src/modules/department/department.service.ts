@@ -1,6 +1,7 @@
 import { Op } from 'sequelize';
 import Department from '../../database/models/department.model';
 import User from '../../database/models/user.model';
+import Role from '../../database/models/role.model';
 import { ICreateDepartmentPayload, IUpdateDepartmentPayload } from './department.interface';
 
 const headInclude = {
@@ -40,6 +41,37 @@ export const updateDepartmentService = async (id: string, payload: IUpdateDepart
 
   await dept.update({ ...payload, updated_by: updatedBy });
   return Department.findByPk(id, { include: [headInclude] });
+};
+
+export const getDepartmentByIdService = async (id: string) => {
+  const dept = await Department.findByPk(id, {
+    include: [{ model: User, as: 'head', attributes: ['id', 'name', 'email'] }],
+  });
+  if (!dept) throw { status: 404, message: 'Department not found' };
+
+  const [totalEmployees, activeEmployees, employees] = await Promise.all([
+    User.count({ where: { department_id: id } }),
+    User.count({ where: { department_id: id, is_active: true } }),
+    User.findAll({
+      where: { department_id: id },
+      attributes: ['id', 'name', 'email', 'is_active'],
+      include: [
+        { model: Role, as: 'role', attributes: ['name'] },
+        { model: User, as: 'manager', attributes: ['id', 'name', 'email'] },
+      ],
+      order: [['name', 'ASC']],
+    }),
+  ]);
+
+  return {
+    ...dept.toJSON(),
+    stats: {
+      totalEmployees,
+      activeEmployees,
+      inactiveEmployees: totalEmployees - activeEmployees,
+    },
+    employees,
+  };
 };
 
 export const deleteDepartmentService = async (id: string) => {

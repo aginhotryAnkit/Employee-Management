@@ -269,6 +269,35 @@ export const swaggerSpec = {
       },
     },
     '/api/departments/{id}': {
+      get: {
+        tags: ['Departments'],
+        summary: 'Get single department with full details and employee stats',
+        security: [{ bearerAuth: [] }],
+        parameters: [{ in: 'path', name: 'id', required: true, schema: { type: 'string', format: 'uuid' } }],
+        responses: {
+          200: {
+            description: 'Department details',
+            content: {
+              'application/json': {
+                example: {
+                  status: true, statusCode: 200, message: 'Department fetched successfully',
+                  response: {
+                    id: 'uuid', name: 'Engineering', code: 'ENG',
+                    description: 'Product development and engineering',
+                    location: 'Floor 2', budget: '1200000.00', status: 'ACTIVE',
+                    head: { id: 'uuid', name: 'Alice Johnson', email: 'alice@company.com' },
+                    stats: { totalEmployees: 12, activeEmployees: 10, inactiveEmployees: 2 },
+                    employees: [
+                      { id: 'uuid', name: 'Neha Singh', email: 'neha@company.com', is_active: true, role: { name: 'employee' }, manager: { id: 'uuid', name: 'Alice Johnson', email: 'alice@company.com' } },
+                    ],
+                  },
+                },
+              },
+            },
+          },
+          404: { description: 'Department not found' },
+        },
+      },
       put: {
         tags: ['Departments'],
         summary: 'Update a department (HR only)',
